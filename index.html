@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Árbol Binario Inteligente | WEKA</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <header class="topbar" role="banner">
+    <div class="topbar__title">
+      <h1>Árbol Binario de Búsqueda</h1>
+      <p>Implementación visual e interactiva con estilo WEKA</p>
+    </div>
+
+    <div class="top-badge" aria-label="Versión del sistema">
+      WEKA 3.8.0
+    </div>
+  </header>
+
+  <main class="layout" role="main">
+    <aside class="sidebar" aria-label="Panel de control del árbol binario">
+
+      <section class="card glass" aria-labelledby="titulo-raiz">
+        <h2 id="titulo-raiz" class="section-title">NODO RAÍZ</h2>
+        <div class="input-row">
+          <input type="number" id="rootInput" placeholder="Ejemplo: 50" aria-label="Valor de la raíz">
+          <button type="button" onclick="setRoot()">Crear</button>
+        </div>
+      </section>
+
+      <section class="card glass" aria-labelledby="titulo-insertar">
+        <h2 id="titulo-insertar" class="section-title">INSERTAR NODOS</h2>
+        <div class="input-row">
+          <input
+            type="number"
+            id="nodeInput"
+            placeholder="Nuevo nodo"
+            onkeydown="if(event.key==='Enter') insertNode()"
+            aria-label="Valor del nodo a insertar"
+          >
+          <button type="button" class="success" onclick="insertNode()">Agregar</button>
+        </div>
+      </section>
+
+      <section class="card glass" aria-labelledby="titulo-busqueda">
+        <h2 id="titulo-busqueda" class="section-title">BÚSQUEDA</h2>
+        <div class="input-row">
+          <input
+            type="number"
+            id="searchInput"
+            placeholder="Buscar nodo"
+            onkeydown="if(event.key==='Enter') searchNode()"
+            aria-label="Valor a buscar"
+          >
+          <button type="button" class="warning" onclick="searchNode()">Buscar</button>
+        </div>
+
+        <div id="searchResult" class="search-box" aria-live="polite"></div>
+      </section>
+
+      <section class="card glass" aria-labelledby="titulo-estadisticas">
+        <h2 id="titulo-estadisticas" class="section-title">ESTADÍSTICAS</h2>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <h3 id="totalNodes">0</h3>
+            <p>Nodos</p>
+          </div>
+
+          <div class="stat-item">
+            <h3 id="stepsAsc">0</h3>
+            <p>Inorden ↑</p>
+          </div>
+
+          <div class="stat-item">
+            <h3 id="stepsDesc">0</h3>
+            <p>Inorden ↓</p>
+          </div>
+
+          <div class="stat-item search-stat">
+            <h3 id="stepsSearch">0</h3>
+            <p>Búsqueda</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card glass" aria-labelledby="titulo-recorridos">
+        <h2 id="titulo-recorridos" class="section-title">RECORRIDOS</h2>
+
+        <div class="traversal-box">
+          <label for="rPreorden">Preorden</label>
+          <div id="rPreorden">—</div>
+        </div>
+
+        <div class="traversal-box">
+          <label for="rInorden">Inorden</label>
+          <div id="rInorden">—</div>
+        </div>
+
+        <div class="traversal-box">
+          <label for="rPostorden">Postorden</label>
+          <div id="rPostorden">—</div>
+        </div>
+
+        <div class="traversal-box">
+          <label for="rInordenDesc">Inorden Descendente</label>
+          <div id="rInordenDesc">—</div>
+        </div>
+      </section>
+
+      <section class="card glass" aria-labelledby="titulo-nodos">
+        <h2 id="titulo-nodos" class="section-title">NODOS INSERTADOS</h2>
+        <div id="nodeList" class="node-list">
+          <span class="empty">Sin nodos aún...</span>
+        </div>
+      </section>
+
+      <section class="card glass" aria-labelledby="titulo-log">
+        <h2 id="titulo-log" class="section-title">LOG</h2>
+        <div id="log" class="log-box" aria-live="polite">
+          <div class="log-info">Sistema iniciado...</div>
+        </div>
+      </section>
+
+      <button type="button" class="reset-btn" onclick="resetTree()">
+        Reiniciar Árbol
+      </button>
+    </aside>
+
+    <section class="viewer" aria-label="Zona de visualización del árbol">
+
+      <div class="viewer-top glass">
+        <div class="legend" aria-label="Leyenda del árbol">
+          <span><i class="dot root"></i> Raíz</span>
+          <span><i class="dot left"></i> Izquierda</span>
+          <span><i class="dot right"></i> Derecha</span>
+          <span><i class="dot found"></i> Encontrado</span>
+        </div>
+      </div>
+
+      <div class="canvas-wrapper glass">
+        <canvas id="treeCanvas" aria-label="Árbol binario visual"></canvas>
+      </div>
+
+      <div class="weka-panel glass" aria-labelledby="titulo-weka">
+        <h2 id="titulo-weka" class="weka-title">DATASET WEKA · ArbolBinario.arff</h2>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Valor</th>
+                <th>Posición</th>
+                <th>Clasificación</th>
+              </tr>
+            </thead>
+            <tbody id="wekaBody">
+              <tr>
+                <td colspan="4" class="empty-table">Sin datos aún</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
